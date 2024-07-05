@@ -1,4 +1,4 @@
-import { Like, Post, SavedPost, User } from "@prisma/client";
+import {  Like, Post, SavedPost, User } from "@prisma/client";
 
 
 // export type CommentWithExtras = Comment & {user: User}
