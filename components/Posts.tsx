@@ -7,12 +7,12 @@ const Posts = async () => {
     const posts = await fetchPosts();
 
     return <>
-        {posts.map((post) => (
+        {/* {posts.map((post) => (
             <Post
                 key={post.id}
                 post = {post}
             />
-        ))}
+        ))} */}
     </>;
 };
 
