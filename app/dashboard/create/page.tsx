@@ -24,34 +24,50 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { UploadButton } from "@/lib/uploadthing";
+import { useUploadThing } from "@/lib/uploadthing";
 import { toast } from "sonner";
 import Error from "@/components/Error";
 import { createPost } from "@/lib/actions";
+import { useState } from "react";
+
 
 const CreatePage = () => {
     const pathname = usePathname();
-    const isCretePage = pathname === "/dashboard/create";
+    const isCreatePage = pathname === "/dashboard/create";
     const router = useRouter();
     const mount = useMount();
 
+    const [upload, setupload] = useState(false);
+
+    const { startUpload } = useUploadThing("imageUploader");
+    
     const form = useForm<z.infer<typeof CreatePost>>({
         resolver: zodResolver(CreatePost),
         defaultValues: {
             caption: "",
             fileUrl: undefined,
+            fileName: undefined,
+            fileType: undefined,
         },
     });
+
+
+    async function blobToFile({fileUrl, fileName, fileType}: {fileUrl: string, fileName: string, fileType: string}): Promise<File> {
+        const response = await fetch(fileUrl);
+        const blob = await response.blob();
+        return new File([blob], fileName, { type: fileType });
+      }
 
     const fileUrl = form.watch("fileUrl");
 
     if (!mount) return null;
 
+
     return (
         <div>
             <Dialog
-                open={isCretePage}
-                onOpenChange={(open) => !open && router.back()}
+                open={isCreatePage}
+                onOpenChange={(open) => !open && !upload && router.back()}
             >
                 <DialogContent>
                     <DialogHeader>
@@ -60,12 +76,25 @@ const CreatePage = () => {
 
                     <Form {...form}>
                         <form
-                            className=" space-y-4 "
+                            className=" space-y-4 space-x-4"
                             onSubmit={form.handleSubmit(async (values) => {
+
+                                setupload(true)
+
+                                const file = await blobToFile(values);
+                                values.fileUrl = await startUpload([file]).then((uploadedFiles: any) => {
+                                    if (uploadedFiles.length > 0 && uploadedFiles[0].url) {
+                                        return uploadedFiles[0].url; 
+                                    }
+                                }) 
+                                
                                 const res = await createPost(values);
                                 if (res) {
                                     return toast.error(<Error res={res} />);
                                 }
+                                
+                                setupload(false)
+                                toast.success("Post created successfully.");
                             })}
                         >
                             {!!fileUrl ? (
@@ -81,6 +110,7 @@ const CreatePage = () => {
                                             className=" rounded-md object-cover"
                                         />
                                     </AspectRatio>
+                                    <input type="text" />
                                 </div>
                             ) : (
                                 <FormField
@@ -88,33 +118,6 @@ const CreatePage = () => {
                                     name="fileUrl"
                                     render={({ field, fieldState }) => (
                                         <FormItem>
-                                            <FormLabel htmlFor="picture">
-                                                Picture
-                                            </FormLabel>
-                                            <FormControl>
-                                                <UploadButton
-                                                    endpoint="imageUploader"
-                                                    onClientUploadComplete={(
-                                                        res
-                                                    ) => {
-                                                        form.setValue(
-                                                            "fileUrl",
-                                                            res[0].url
-                                                        );
-                                                        toast.success(
-                                                            "Upload complete."
-                                                        );
-                                                    }}
-                                                    onUploadError={(
-                                                        error: Error
-                                                    ) => {
-                                                        console.log(error);
-                                                        toast.error(
-                                                            "Upload failed."
-                                                        );
-                                                    }}
-                                                />
-                                            </FormControl>
                                             <FormDescription>
                                                 Upload a picture to post.
                                             </FormDescription>
@@ -145,6 +148,31 @@ const CreatePage = () => {
                                     )}
                                 />
                             )}
+                            <label className="px-4 py-2 bg-blue-600 rounded-lg shadow-lg tracking-wide text-white border border-white cursor-pointer hover:bg-blue-700">
+                                <span className="">Select a file</span>
+                                <input
+                                    type="file"
+                                    className="hidden"
+                                    onChange={(event) => {
+                                        const { files } = event.target;
+                                        if (files && files[0]) {
+                                            form.setValue(
+                                                "fileUrl",
+                                                URL.createObjectURL(files[0])
+                                            );
+                                            form.setValue(
+                                                "fileName",
+                                                files[0].name
+                                            );
+                                            form.setValue(
+                                                "fileType",
+                                                files[0].type
+                                            );
+
+                                        }
+                                    }}
+                                />
+                            </label>
                             <Button
                                 type="submit"
                                 disabled={form.formState.isSubmitting}

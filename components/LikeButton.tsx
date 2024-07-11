@@ -19,7 +19,6 @@ const LikeButton = ({ post, userId }: Props) => {
         post.likes,
         // @ts-ignore
         (state: Like[], newLike: Like) =>
-            // here we check if the like already exists, if it does, we remove it, if it doesn't, we add it
             state.some(predicate)
                 ? state.filter((like) => like.userId !== userId)
                 : [...state, newLike]
