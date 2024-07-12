@@ -89,6 +89,7 @@ model Post {
     createdAt DateTime    @default(now())
     updatedAt DateTime    @updatedAt
     caption   String?
+    location  String?
     fileUrl   String      @unique
     likes     Like[]
     savedBy   SavedPost[]

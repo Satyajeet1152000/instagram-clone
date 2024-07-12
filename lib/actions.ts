@@ -12,6 +12,7 @@ import { z } from "zod";
 import { getUserId } from "./utils";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import getUserLocation from "./getUserLocation";
 
 export const createPost = async (values: z.infer<typeof CreatePost>) => {
     const userId = await getUserId();
@@ -25,13 +26,15 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
         };
     }
 
-    const { fileUrl, caption } = validateFields.data;
+    const { fileUrl, caption, location } = validateFields.data;
+    const loc = await getUserLocation(location)
 
     try {
         await prisma.post.create({
             data: {
                 caption,
                 fileUrl,
+                location: loc,
                 user: {
                     connect: {
                         id: userId,

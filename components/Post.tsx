@@ -35,7 +35,7 @@ const Post = async ({ post }: { post: PostWithExtras }) => {
                             <span className="text-neutral-400 text-xs">{timeAgo(post.createdAt)}</span>
                         </p>
                         <p className="text-xs text-black dark:text-white font-medium">
-                            Dubai, United Arab Emirates
+                            {post.location}
                         </p>
                     </div>
                 </div>

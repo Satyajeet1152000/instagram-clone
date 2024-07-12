@@ -30,6 +30,8 @@ import Error from "@/components/Error";
 import { createPost } from "@/lib/actions";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
+import { MapPin, MapPinOff } from "lucide-react";
+import getUserLocation from "@/lib/getUserLocation";
 
 const CreatePage = () => {
     const pathname = usePathname();
@@ -39,6 +41,8 @@ const CreatePage = () => {
 
     const [upload, setupload] = useState(false);
     const [uploadProgress, setuploadProgress] = useState(0);
+
+    const [location, setLocation] = useState(true);
 
     const { startUpload } = useUploadThing("imageUploader", {
         onUploadProgress(p) {
@@ -53,6 +57,7 @@ const CreatePage = () => {
             fileUrl: undefined,
             fileName: undefined,
             fileType: undefined,
+            location: "", 
         },
     });
 
@@ -92,6 +97,9 @@ const CreatePage = () => {
                                 setupload(true);
 
                                 const file = await blobToFile(values);
+
+                                const {ip} = location && await (await fetch('https://api.ipify.org?format=json')).json()
+                                values.location =  ip ? ip : "";
 
                                 values.fileUrl = await startUpload([file]).then(
                                     (uploadedFiles: any) => {
@@ -147,18 +155,29 @@ const CreatePage = () => {
                                     control={form.control}
                                     name="caption"
                                     render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel htmlFor="caption">
-                                                Caption
-                                            </FormLabel>
-                                            <FormControl>
-                                                <Input
-                                                    type="caption"
-                                                    id="caption"
-                                                    placeholder="Write a caption..."
-                                                    {...field}
-                                                />
-                                            </FormControl>
+                                        <FormItem className="flex justify-between items-end gap-2">
+                                            <div className="w-full">
+                                                <FormLabel htmlFor="caption">
+                                                    Caption
+                                                </FormLabel>
+                                                <FormControl>
+                                                    <Input
+                                                        type="caption"
+                                                        id="caption"
+                                                        placeholder="Write a caption..."
+                                                        {...field}
+                                                    />
+                                                </FormControl>
+                                            </div>
+                                            <Button
+                                                variant={"outline"}
+                                                size={"icon"}
+                                                className="text-black dark:text-white"
+                                                onClick={(e) => {e.preventDefault(); setLocation(!location); }}
+                                                name="location"
+                                            >
+                                                { location ? <MapPin /> : <MapPinOff/> } 
+                                            </Button>
                                             <FormMessage />
                                         </FormItem>
                                     )}

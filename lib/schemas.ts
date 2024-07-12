@@ -8,6 +8,7 @@ export const PostSchema = z.object({
     caption: z.string().optional(),
     fileName: z.string(),
     fileType: z.string(),
+    location: z.string(),
 }) 
 
 export const CreatePost = PostSchema.omit({ id: true });
