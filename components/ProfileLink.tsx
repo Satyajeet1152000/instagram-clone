@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import { cn } from "@/lib/utils";
 import type { User } from "next-auth";
 import Link from "next/link";
@@ -8,26 +8,28 @@ import { buttonVariants } from "./ui/button";
 import UserAvatar from "./UserAvatar";
 
 const ProfileLink = ({ user }: { user: User }) => {
-    const pathname = usePathname()
-    const href = `/dashboard/${user.username}`
+    const pathname = usePathname();
+    const href = `/dashboard/${user.username}`;
     const isActive = pathname === href;
     return (
-        <Link 
+        <Link
             href={href}
             className={buttonVariants({
                 variant: isActive ? "secondary" : "ghost",
-                className: "navLink",
+                className: cn("navLink", {
+                    "hidden md:flex": false,
+                }),
                 size: "lg",
             })}
         >
-            <UserAvatar user={user} className={`h-6 w-6 ${isActive && "border-2 border-white"}`}/>
+            <UserAvatar
+                user={user}
+                className={`h-6 w-6 ${isActive && "border-2 border-white"}`}
+            />
             <p
-                className={`${
-                    (cn("hidden lg:block"),
-                    {
-                        "font-extrabold": isActive,
-                    })
-                }`}
+                className={cn("hidden lg:block", {
+                    "font-extrabold": isActive,
+                })}
             >
                 Profile
             </p>
