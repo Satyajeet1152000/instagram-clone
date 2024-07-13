@@ -34,3 +34,36 @@ export const fetchPosts = async () => {
         throw new Error("Faild to fetch posts.");
     }
 }
+
+export const fetchPostById = async (id: string) => {
+    noStore();
+
+    try {
+        const data = await prisma.post.findUnique({
+            where: {
+                id
+            },
+            include: {
+                comments: {
+                    include: {
+                        user: true 
+                    },
+                    orderBy: {
+                        createdAt: "desc"
+                    },
+                },
+                likes: {
+                    include: {
+                        user: true,
+                    },
+                },
+                savedBy: true,
+                user: true,
+            },
+        })
+        return data;
+    } catch (error) {
+        console.error("Database Error: ", error);
+        throw new Error("Failed to fetch Post.");
+    }
+}

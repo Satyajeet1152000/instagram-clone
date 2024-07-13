@@ -1,6 +1,5 @@
 import { auth } from "@/auth";
 import { PostWithExtras } from "@/lib/definations";
-import React from "react";
 import UserAvatar from "./UserAvatar";
 import PostOptions from "./PostOptions";
 import { Card } from "./ui/card";
@@ -8,7 +7,7 @@ import Image from "next/image";
 import PostActions from "./PostActions";
 import Link from "next/link";
 import Comments from "./Comments";
-import timeAgo from "@/lib/timeAgo";
+import Timestamp from "./Timestamp";
 
 const Post = async ({ post }: { post: PostWithExtras }) => {
     const session = await auth();
@@ -32,7 +31,7 @@ const Post = async ({ post }: { post: PostWithExtras }) => {
                             >
                                 •
                             </span>
-                            <span className="text-neutral-400 text-xs">{timeAgo(post.createdAt)}</span>
+                            <Timestamp createdAt={post.createdAt}/>
                         </p>
                         <p className="text-xs text-black dark:text-white font-medium">
                             {post.location}

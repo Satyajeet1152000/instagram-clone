@@ -15,7 +15,10 @@ const nextConfig = {
               hostname: 'thumbs.dreamstime.com',
             },
           ], 
-    }
+    },
+    experimental: {
+      appDir: true,
+    },
 };
 
 export default nextConfig;
