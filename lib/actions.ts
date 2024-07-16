@@ -7,6 +7,7 @@ import {
     CreatePost,
     DeleteComment,
     DeletePost,
+    FollowUser,
     LikeSchema,
 } from "./schemas";
 import { z } from "zod";
@@ -28,7 +29,7 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
     }
 
     const { fileUrl, caption, location } = validateFields.data;
-    const loc = await getUserLocation(location)
+    const loc = await getUserLocation(location);
 
     try {
         await prisma.post.create({
@@ -250,34 +251,96 @@ export const createComment = async (values: z.infer<typeof CreateComment>) => {
     }
 };
 
-
-export async function deleteComment(formData: FormData) {
+export const deleteComment = async (formData: FormData) => {
     const userId = await getUserId();
-  
+
     const { id } = DeleteComment.parse({
-      id: formData.get("id"),
+        id: formData.get("id"),
     });
-  
+
     const comment = await prisma.comment.findUnique({
-      where: {
-        id,
-        userId,
-      },
-    });
-  
-    if (!comment) {
-      throw new Error("Comment not found");
-    }
-  
-    try {
-      await prisma.comment.delete({
         where: {
-          id,
+            id,
+            userId,
         },
-      });
-      revalidatePath("/dashboard");
-      return { message: "Deleted Comment." };
-    } catch (error) {
-      return { message: "Database Error: Failed to Delete Comment." };
+    });
+
+    if (!comment) {
+        throw new Error("Comment not found");
     }
-  }
+
+    try {
+        await prisma.comment.delete({
+            where: {
+                id,
+            },
+        });
+        revalidatePath("/dashboard");
+        return { message: "Deleted Comment." };
+    } catch (error) {
+        return { message: "Database Error: Failed to Delete Comment." };
+    }
+};
+
+export const followUser = async (formData: FormData) => {
+    const userId = await getUserId();
+
+    const { id } = FollowUser.parse({
+        id: formData.get("id"),
+    });
+
+    const user = await prisma.user.findUnique({
+        where: {
+            id,
+        },
+    });
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    const follows = await prisma.follows.findUnique({
+        where: {
+            followerId_followingId: {
+                // followerId is of the person who wants to follow
+                followerId: userId,
+                // followingId is of the person who is being followed
+                followingId: id,
+            },
+        },
+    });
+
+    if (follows) {
+        try {
+            await prisma.follows.delete({
+                where: {
+                    followerId_followingId: {
+                        followerId: userId,
+                        followingId: id,
+                    },
+                },
+            });
+            revalidatePath("/dashboard");
+            return { message: "Unfollowed User." };
+        } catch (error) {
+            return {
+                message: "Database Error: Failed to Unfollow User.",
+            };
+        }
+    }
+
+    try {
+        await prisma.follows.create({
+            data: {
+                followerId: userId,
+                followingId: id,
+            },
+        });
+        revalidatePath("/dashboard");
+        return { message: "Followed User." };
+    } catch (error) {
+        return {
+            message: "Database Error: Failed to Follow User.",
+        };
+    }
+};

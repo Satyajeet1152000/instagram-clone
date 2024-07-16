@@ -65,24 +65,24 @@ model User {
     saved         SavedPost[]
     likes         Like[]
     comments      Comment[]
-    // followedBy    Follows[]   @relation("following")
-    // following     Follows[]   @relation("follower")
+    followedBy    Follows[]   @relation("following")
+    following     Follows[]   @relation("follower")
     accounts      Account[]
     sessions      Session[]
 
     @@map(name: "users")
 }
 
-// model Follows {
-//     follower    User   @relation("follower", fields: [followerId], references: [id])
-//     followerId  String
-//     following   User   @relation("following", fields: [followingId], references: [id])
-//     followingId String
+model Follows {
+    follower    User   @relation("follower", fields: [followerId], references: [id])
+    followerId  String
+    following   User   @relation("following", fields: [followingId], references: [id])
+    followingId String
 
-//     @@id([followerId, followingId])
-//     @@index([followerId])
-//     @@index([followingId])
-// }
+    @@id([followerId, followingId])
+    @@index([followerId])
+    @@index([followingId])
+}
 
 model Post {
     id        String      @id @default(cuid())
