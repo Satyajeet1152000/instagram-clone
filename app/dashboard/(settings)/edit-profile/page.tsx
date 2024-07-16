@@ -1,4 +1,5 @@
 import { auth } from '@/auth';
+import ProfileForm from '@/components/ProfileForm';
 import { fetchProfile } from '@/lib/data';
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
