@@ -9,6 +9,7 @@ import {
     DeletePost,
     FollowUser,
     LikeSchema,
+    UpdatePost,
     UpdateUser,
 } from "./schemas";
 import { z } from "zod";
@@ -380,4 +381,47 @@ export const updateProfile = async (values: z.infer<typeof UpdateUser>) => {
     } catch (error) {
         return { message: "Database Error: Failed to Update Profile." };
     }
+};
+
+export const updatePost = async (values: z.infer<typeof UpdatePost>) => {
+    const userId = await getUserId();
+
+    const validatedFields = UpdatePost.safeParse(values);
+
+    if (!validatedFields.success) {
+        return {
+            errors: validatedFields.error.flatten().fieldErrors,
+            message: "Missing Fields. Failed to Update Post.",
+        };
+    }
+
+    const { id, fileUrl, caption } = validatedFields.data;
+
+    const post = await prisma.post.findUnique({
+        where: {
+            id,
+            userId,
+        },
+    });
+
+    if (!post) {
+        throw new Error("Post not found");
+    }
+
+    try {
+        await prisma.post.update({
+            where: {
+                id,
+            },
+            data: {
+                fileUrl,
+                caption,
+            },
+        });
+    } catch (error) {
+        return { message: "Database Error: Failed to Update Post." };
+    }
+
+    revalidatePath("/dashboard");
+    redirect("/dashboard");
 };
