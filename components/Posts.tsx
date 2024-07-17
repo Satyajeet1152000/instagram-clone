@@ -1,9 +1,10 @@
+'use client'
 import { fetchPosts } from "@/lib/data";
 import React, { useEffect, useState } from "react";
 import Post from "./Post";
 import { PostWithExtras } from "@/lib/definations";
 
-const Posts = async () => {
+const Posts = () => {
     const [posts, setPosts] = useState<PostWithExtras[]>([]);
     const [loading, setLoading] = useState(true);
 
