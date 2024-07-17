@@ -1,10 +1,10 @@
 import { PostWithExtras } from "@/lib/definations";
-import { SavedPost } from "@prisma/client";
 import { useOptimistic } from "react";
 import ActionIcon from "./ActionIcon";
 import { Bookmark } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { bookmarkPost } from "@/lib/actions";
+import { SavedPost } from "@prisma/client";
 
 type Props = {
     post: PostWithExtras;

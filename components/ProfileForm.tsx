@@ -1,8 +1,8 @@
 'use client'
 import { UserSchema } from '@/lib/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import React from 'react';
-import { useForm, FormProvider, useFormContext } from 'react-hook-form';
+;
+import { useForm, FormProvider } from 'react-hook-form';
 import ProfileAvatar from './ProfileAvatar';
 import UserAvatar from './UserAvatar';
 import { toast } from 'sonner';
