@@ -13,8 +13,9 @@ const Posts = () => {
     useEffect(() => {
         const getPosts = async () => {
             try {
-                const postData = await fetchPosts();
-                setPosts(postData);
+                const postData = await fetch('/api/posts');
+                const data: PostWithExtras[] = await postData.json();
+                setPosts(data);
             } catch (error) {
                 console.log("Posts.tsx Errors--------- ", error);
             } finally {
