@@ -19,9 +19,14 @@ import { redirect } from "next/navigation";
 import getUserLocation from "./getUserLocation";
 
 export const createPost = async (values: z.infer<typeof CreatePost>) => {
+    console.log("Starting createPost function");
     const userId = await getUserId();
 
+    console.log("Fetched user ID:", userId);
+
     const validateFields = CreatePost.safeParse(values);
+
+    console.log("Validation result:", validateFields.success);
 
     if (!validateFields.success) {
         return {
@@ -32,6 +37,8 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
 
     const { fileUrl, caption, location } = validateFields.data;
     const loc = await getUserLocation(location);
+
+    console.log("User location:", loc);
 
     try {
         await prisma.post.create({
@@ -46,6 +53,7 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
                 },
             },
         });
+        console.log("Post created in database");
     } catch (error) {
         return {
             message: "Database Error: Failed to Create Post.",

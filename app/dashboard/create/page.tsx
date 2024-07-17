@@ -93,48 +93,44 @@ const CreatePage = () => {
                         <form
                             className=" space-y-4"
                             onSubmit={form.handleSubmit(async (values) => {
-                                try {
-                                    console.log("Start")
-                                    setupload(true);
+                                console.log("Starting form submission");
+                                setupload(true);
 
-                                    const file = await blobToFile(values);
+                                const file = await blobToFile(values);
+                                console.log("File converted:");
 
-                                    const { ip } =
-                                        location &&
-                                        (await (
-                                            await fetch(
-                                                "https://api.ipify.org?format=json"
-                                            )
-                                        ).json());
-                                    values.location = ip ? ip : "";
+                                const { ip } =
+                                    location &&
+                                    (await (
+                                        await fetch(
+                                            "https://api.ipify.org?format=json"
+                                        )
+                                    ).json());
+                                values.location = ip ? ip : "";
 
-                                    values.fileUrl = await startUpload([
-                                        file,
-                                    ]).then((uploadedFiles: any) => {
+                                console.log("Fetched IP address:", ip);
+
+                                values.fileUrl = await startUpload([file]).then(
+                                    (uploadedFiles: any) => {
                                         if (
                                             uploadedFiles.length > 0 &&
                                             uploadedFiles[0].url
                                         ) {
                                             return uploadedFiles[0].url;
                                         }
-                                    });
-                                    
-                                    console.log("Upload finished - on uploadthing server")
-
-                                    const res = await createPost(values);
-                                    if (res) {
-                                        return toast.error(<Error res={res} />);
                                     }
-                                    
+                                );
+                                console.log("Uploaded result", values.fileUrl);
 
-                                    console.log("Upload finished - toast")
-                                    setupload(false);
-                                    toast.success("Post created successfully.");
-                                } catch (error) {
-                                    console.error('Error creating post:', error);
-                                    toast.error('An error occurred while creating the post.');
-                                    // setUpload(false);
+                                const res = await createPost(values);
+                                console.log("Create post result:", res);
+                                if (res) {
+                                    return toast.error(<Error res={res} />);
                                 }
+
+                                console.log("Upload finished - toast");
+                                setupload(false);
+                                toast.success("Post created successfully.");
                             })}
                         >
                             {!!fileUrl ? (

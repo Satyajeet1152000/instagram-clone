@@ -1,6 +1,6 @@
 import Posts from "@/components/Posts";
 import { PostSkeleton } from "@/components/Skeletons";
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 
 const Dashboard = () => {
     return <main className=" flex w-full flex-grow">
