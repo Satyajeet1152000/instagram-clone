@@ -31,7 +31,6 @@ import { createPost } from "@/lib/actions";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { MapPin, MapPinOff } from "lucide-react";
-import getUserLocation from "@/lib/getUserLocation";
 
 const CreatePage = () => {
     const pathname = usePathname();
@@ -57,7 +56,7 @@ const CreatePage = () => {
             fileUrl: undefined,
             fileName: undefined,
             fileType: undefined,
-            location: "", 
+            location: "",
         },
     });
 
@@ -94,31 +93,43 @@ const CreatePage = () => {
                         <form
                             className=" space-y-4"
                             onSubmit={form.handleSubmit(async (values) => {
-                                setupload(true);
+                                try {
+                                    setupload(true);
 
-                                const file = await blobToFile(values);
+                                    const file = await blobToFile(values);
 
-                                const {ip} = location && await (await fetch('https://api.ipify.org?format=json')).json()
-                                values.location =  ip ? ip : "";
+                                    const { ip } =
+                                        location &&
+                                        (await (
+                                            await fetch(
+                                                "https://api.ipify.org?format=json"
+                                            )
+                                        ).json());
+                                    values.location = ip ? ip : "";
 
-                                values.fileUrl = await startUpload([file]).then(
-                                    (uploadedFiles: any) => {
+                                    values.fileUrl = await startUpload([
+                                        file,
+                                    ]).then((uploadedFiles: any) => {
                                         if (
                                             uploadedFiles.length > 0 &&
                                             uploadedFiles[0].url
                                         ) {
                                             return uploadedFiles[0].url;
                                         }
+                                    });
+
+                                    const res = await createPost(values);
+                                    if (res) {
+                                        return toast.error(<Error res={res} />);
                                     }
-                                );
 
-                                const res = await createPost(values);
-                                if (res) {
-                                    return toast.error(<Error res={res} />);
+                                    setupload(false);
+                                    toast.success("Post created successfully.");
+                                } catch (error) {
+                                    console.error('Error creating post:', error);
+                                    toast.error('An error occurred while creating the post.');
+                                    // setUpload(false);
                                 }
-
-                                setupload(false);
-                                toast.success("Post created successfully.");
                             })}
                         >
                             {!!fileUrl ? (
@@ -173,10 +184,17 @@ const CreatePage = () => {
                                                 variant={"outline"}
                                                 size={"icon"}
                                                 className="text-black dark:text-white"
-                                                onClick={(e) => {e.preventDefault(); setLocation(!location); }}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    setLocation(!location);
+                                                }}
                                                 name="location"
                                             >
-                                                { location ? <MapPin /> : <MapPinOff/> } 
+                                                {location ? (
+                                                    <MapPin />
+                                                ) : (
+                                                    <MapPinOff />
+                                                )}
                                             </Button>
                                             <FormMessage />
                                         </FormItem>
