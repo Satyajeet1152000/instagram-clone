@@ -52,12 +52,8 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
         };
     }
 
-    try {
-        revalidatePath("/dashboard");
-        redirect("/dashboard");
-    } catch (error) {
-        console.log("Error -- ", error)        
-    }
+    revalidatePath("/dashboard");
+    redirect("/dashboard");
 };
 
 export const deletePost = async (formData: FormData) => {
