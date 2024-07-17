@@ -1,4 +1,3 @@
-"use client";
 import { auth } from "@/auth";
 import { PostWithExtras } from "@/lib/definations";
 import UserAvatar from "./UserAvatar";
@@ -9,32 +8,13 @@ import PostActions from "./PostActions";
 import Link from "next/link";
 import Comments from "./Comments";
 import Timestamp from "./Timestamp";
-import { useEffect, useState } from "react";
-import type { Session } from "next-auth";
 
-
-const Post = ({ post }: { post: PostWithExtras }) => {
-    const [session, setSession] = useState<Session | null>(null);
-    const [userId, setUserId] = useState<string | undefined>(undefined);
-
-    useEffect(() => {
-        const fetchSession = async () => {
-            const session = await auth();
-            setSession(session);
-            setUserId(session?.user?.id);
-        };
-
-        fetchSession();
-    }, []);
+const Post = async ({ post }: { post: PostWithExtras }) => {
+    const session = await auth();
+    const userId = session?.user?.id;
+    const username = post.user.username;
 
     if (!session?.user) return null;
-
-    const username = post.user.username;
-    // const session = await auth();
-    // const userId = session?.user?.id;
-    // const username = post.user.username;
-
-    // if (!session?.user) return null;
 
     return (
         <div className=" flex flex-col space-y-2.5">
@@ -53,9 +33,11 @@ const Post = ({ post }: { post: PostWithExtras }) => {
                             </span>
                             <Timestamp createdAt={post.createdAt} />
                         </p>
-                        <p className="text-xs text-black dark:text-white font-medium">
-                            {post.location}
-                        </p>
+                        {post.location && (
+                            <p className="text-xs text-black dark:text-white font-medium">
+                                {post.location}
+                            </p>
+                        )}
                     </div>
                 </div>
                 <PostOptions post={post} userId={userId} />

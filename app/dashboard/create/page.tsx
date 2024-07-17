@@ -56,7 +56,7 @@ const CreatePage = () => {
             fileUrl: undefined,
             fileName: undefined,
             fileType: undefined,
-            location: "",
+            location: "", 
         },
     });
 
@@ -93,22 +93,15 @@ const CreatePage = () => {
                         <form
                             className=" space-y-4"
                             onSubmit={form.handleSubmit(async (values) => {
-                                console.log("Starting form submission");
                                 setupload(true);
 
                                 const file = await blobToFile(values);
-                                console.log("File converted:");
 
-                                const { ip } =
-                                    location &&
-                                    (await (
-                                        await fetch(
-                                            "https://api.ipify.org?format=json"
-                                        )
-                                    ).json());
-                                values.location = ip ? ip : "";
+                                const {ip} = location && await (await fetch('https://api.ipify.org?format=json')).json()
+                                values.location =  ip ? ip : "";
 
-                                console.log("Fetched IP address:", ip);
+                                // console.log(ip)
+
 
                                 values.fileUrl = await startUpload([file]).then(
                                     (uploadedFiles: any) => {
@@ -120,15 +113,12 @@ const CreatePage = () => {
                                         }
                                     }
                                 );
-                                console.log("Uploaded result", values.fileUrl);
 
                                 const res = await createPost(values);
-                                console.log("Create post result:", res);
                                 if (res) {
                                     return toast.error(<Error res={res} />);
                                 }
 
-                                console.log("Upload finished - toast");
                                 setupload(false);
                                 toast.success("Post created successfully.");
                             })}
@@ -185,17 +175,10 @@ const CreatePage = () => {
                                                 variant={"outline"}
                                                 size={"icon"}
                                                 className="text-black dark:text-white"
-                                                onClick={(e) => {
-                                                    e.preventDefault();
-                                                    setLocation(!location);
-                                                }}
+                                                onClick={(e) => {e.preventDefault(); setLocation(!location); }}
                                                 name="location"
                                             >
-                                                {location ? (
-                                                    <MapPin />
-                                                ) : (
-                                                    <MapPinOff />
-                                                )}
+                                                { location ? <MapPin /> : <MapPinOff/> } 
                                             </Button>
                                             <FormMessage />
                                         </FormItem>

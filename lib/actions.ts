@@ -19,14 +19,9 @@ import { redirect } from "next/navigation";
 import getUserLocation from "./getUserLocation";
 
 export const createPost = async (values: z.infer<typeof CreatePost>) => {
-    console.log("Starting createPost function");
     const userId = await getUserId();
 
-    console.log("Fetched user ID:", userId);
-
     const validateFields = CreatePost.safeParse(values);
-
-    console.log("Validation result:", validateFields.success);
 
     if (!validateFields.success) {
         return {
@@ -35,17 +30,17 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
         };
     }
 
-    const { fileUrl, caption, location } = validateFields.data;
-    const loc = await getUserLocation(location);
-
-    console.log("User location:", loc);
+    const { fileUrl, caption } = validateFields.data;
+    let {location } = validateFields.data;
+    // console.log(location)
+    location = location ? await getUserLocation(location) : "";
 
     try {
         await prisma.post.create({
             data: {
                 caption,
                 fileUrl,
-                location: loc,
+                location,
                 user: {
                     connect: {
                         id: userId,
@@ -53,7 +48,6 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
                 },
             },
         });
-        console.log("Post created in database");
     } catch (error) {
         return {
             message: "Database Error: Failed to Create Post.",
@@ -61,8 +55,6 @@ export const createPost = async (values: z.infer<typeof CreatePost>) => {
     }
 
     revalidatePath("/dashboard");
-    console.log("Revalidated dashboard");
-    console.log("Redirecting dashboard");
     redirect("/dashboard");
 };
 

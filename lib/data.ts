@@ -28,7 +28,6 @@ export const fetchPosts = async () => {
                 createdAt: "desc",
             },
         });
-
         return data;
     } catch (error) {
         console.log("Database Error: ", error);
