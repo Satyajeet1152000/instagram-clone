@@ -94,6 +94,7 @@ const CreatePage = () => {
                             className=" space-y-4"
                             onSubmit={form.handleSubmit(async (values) => {
                                 try {
+                                    console.log("Start")
                                     setupload(true);
 
                                     const file = await blobToFile(values);
@@ -117,12 +118,16 @@ const CreatePage = () => {
                                             return uploadedFiles[0].url;
                                         }
                                     });
+                                    
+                                    console.log("Upload finished - on uploadthing server")
 
                                     const res = await createPost(values);
                                     if (res) {
                                         return toast.error(<Error res={res} />);
                                     }
+                                    
 
+                                    console.log("Upload finished - toast")
                                     setupload(false);
                                     toast.success("Post created successfully.");
                                 } catch (error) {
