@@ -1,12 +1,13 @@
+'use client'
 import { CreateComment } from "@/lib/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import React from "react";
-import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
 import { createComment } from "@/lib/actions";
 import { Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useForm } from "react-hook-form";
 
 const CommentForm = ({
     postId,
