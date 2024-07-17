@@ -39,7 +39,7 @@ const ProfileLayout = async ({ children, params: { username } }: Props) => {
 
     //   the followerId here is the id of the user who is following the profile
     const isFollowing = profile?.followedBy.some(
-        (user) => user.followerId === session?.user.id
+        (user: any) => user.followerId === session?.user.id
     );
 
     if (!profile) {

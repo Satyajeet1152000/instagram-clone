@@ -1,26 +1,33 @@
-'use client'
+"use client";
 
-import useMount from '@/app/hooks/useMount';
-import { UserWithExtras } from '@/lib/definations';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useSession } from 'next-auth/react';
-import React, { useRef, useState } from 'react'
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import UserAvatar from './UserAvatar';
-import { Dialog, DialogClose, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { Form, FormControl, FormField, FormItem } from './ui/form';
-import { toast } from 'sonner';
+import useMount from "@/app/hooks/useMount";
+import { UserWithExtras } from "@/lib/definations";
+// import { zodResolver } from '@hookform/resolvers/zod';
+import { useSession } from "next-auth/react";
+import React, { useRef, useState } from "react";
+// import { useForm } from 'react-hook-form';
+import { z } from "zod";
+import UserAvatar from "./UserAvatar";
+import {
+    Dialog,
+    // DialogClose,
+    // DialogContent,
+    // DialogHeader,
+    // DialogTitle,
+    DialogTrigger,
+} from "./ui/dialog";
+// import { Form, FormControl, FormField, FormItem } from './ui/form';
+// import { toast } from 'sonner';
 
-import SubmitButton from './SubmitButton';
+// import SubmitButton from "./SubmitButton";
 
 const ProfileAvatar = ({
     user,
     children,
-  }: {
+}: {
     user: UserWithExtras;
     children: React.ReactNode;
-  }) => {
+}) => {
     const { data: session } = useSession();
     const isCurrentUser = session?.user.id === user.id;
     // const form = useForm<z.infer<typeof UpdateUser>>({
@@ -35,17 +42,17 @@ const ProfileAvatar = ({
     // const inputRef = useRef<HTMLInputElement>(null);
     const [open, setOpen] = useState(false);
     const mount = useMount();
-  
+
     if (!mount || !session) return null;
-  
+
     if (!isCurrentUser)
-      return <UserAvatar user={user} className="w-20 h-20 md:w-36 md:h-36" />;
-  
+        return <UserAvatar user={user} className="w-20 h-20 md:w-36 md:h-36" />;
+
     return (
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>{children}</DialogTrigger>
-  
-        {/* <DialogContent className="dialogContent">
+        <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+
+            {/* <DialogContent className="dialogContent">
           <DialogHeader>
             <DialogTitle className="mx-auto font-medium text-xl py-5">
               Change Profile Photo
@@ -112,8 +119,8 @@ const ProfileAvatar = ({
             Cancel
           </DialogClose>
         </DialogContent> */}
-      </Dialog>
+        </Dialog>
     );
-}
+};
 
-export default ProfileAvatar
+export default ProfileAvatar;
