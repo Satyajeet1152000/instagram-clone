@@ -1,16 +1,40 @@
 import { fetchPosts } from "@/lib/data";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Post from "./Post";
+import { PostWithExtras } from "@/lib/definations";
 
 const Posts = async () => {
-    const posts = await fetchPosts();
+    const [posts, setPosts] = useState<PostWithExtras[]>([]);
+    const [loading, setLoading] = useState(true);
 
-    return <>
-        {posts.map((post) => {
-            console.log("posts mapping.")
-            return <Post key={post.id} post = {post} />
-        })}
-    </>;
+    // const posts = await fetchPosts();
+
+    useEffect(() => {
+        const getPosts = async () => {
+            try {
+                const postData = await fetchPosts();
+                setPosts(postData);
+            } catch (error) {
+                console.log("Posts.tsx Errors--------- ", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        getPosts();
+    }, []);
+
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    return (
+        <>
+            {posts.map((post: any) => {
+                return <Post key={post.id} post={post} />;
+            })}
+        </>
+    );
 };
 
 export default Posts;
